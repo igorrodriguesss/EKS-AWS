@@ -5,6 +5,7 @@ resources:
 - frontend/service.yaml
 - backend/deploy.yaml
 - backend/service.yaml
+- ingress.yaml
 
 images: 
 - name: 829115578807.dkr.ecr.us-east-1.amazonaws.com/dvn-workshop/production/frontend
