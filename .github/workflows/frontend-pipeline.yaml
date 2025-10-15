@@ -1,0 +1,61 @@
+name: frontend Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env: 
+  ECR_REPOSITORY: dvn-workshop/production/frontend
+  IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  frontend:
+    name: frontend Job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.0.0
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag, and Push Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -f ./dvn-workshop-apps/frontend/youtube-live-app/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./dvn-workshop-apps/frontend/youtube-live-app
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: igorrodriguesss/EKS-AWS-GITOPS
+          token: ${{ secrets.PAT }}
+          path: EKS-AWS-GITOPS
+
+      - name: Kustomize Edit
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          cd EKS-AWS-GITOPS/dvn-workshop-kubernetes
+          kustomize edit set image 829115578807.dkr.ecr.us-east-1.amazonaws.com/dvn-workshop/production/frontend=$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          git config user.name "github.actions[bot]"
+          git config user.email "github.actions[bot]@users.noreply.github.com"
+          git add kustomization.yaml
+          git commit -m "[BOT] Updating image to $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          git push
