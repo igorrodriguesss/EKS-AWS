@@ -38,7 +38,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker build -f ./dvn-workshop-kubernetes/backend/YoutubeLiveApp/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./dvn-workshop-kubernetes/backend/YoutubeLiveApp
+          docker build -f ./dvn-workshop-apps/backend/YoutubeLiveApp/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./dvn-workshop-apps/backend/YoutubeLiveApp
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Checkout GitOps repo
