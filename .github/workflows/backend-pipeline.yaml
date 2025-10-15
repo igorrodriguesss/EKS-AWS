@@ -1,0 +1,57 @@
+name: Backend Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env: 
+    ECR_REPOSITORY: dvn-workshop/production/backend
+    IMAGE_TAG: ${{ github.sha }
+
+jobs:
+  backend:
+    name: Backend Job
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+    - uses: actions/checkout@v4
+   
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v5.0.0
+      with:
+      aws-region: ${{ secrets.AWS_REGION }}
+       role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      
+      steps:
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag, and Push Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}}
+        run: |
+          docker build -f ./dvn-workshop-kubernetes/backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./dvn-workshop-kubernetes/backend/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: igorrodriguesss/EKS-AWS-GITOPS
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      -name: Kustomize Edit
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        kustomize edit set image $REGISTRY/$ECR_REPOSITORY=$REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        git cofnig user.name : github.actions[bot]
+        git config user.email: github.actions[bot]@users.noreply.github.com
+        git add ./dvn-workshop-kubernetes/kustomization.yaml
+        git commit -m "[BOT] Updating image to $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        git push
