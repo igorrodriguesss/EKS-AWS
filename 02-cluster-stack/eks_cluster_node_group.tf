@@ -11,7 +11,7 @@ resource "aws_eks_node_group" "this" {
     min_size     = var.eks_cluster.scaling_config.min_size
   }
 
-
+  
   depends_on = [
     aws_iam_role_policy_attachment.eks_node_group_role_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.eks_node_group_role_AmazonEKS_CNI_Policy,
