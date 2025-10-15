@@ -46,6 +46,7 @@ jobs:
         with:
           repository: igorrodriguesss/EKS-AWS-GITOPS
           token: ${{ secrets.PAT }}
+          path: EKS-AWS-GITOPS
 
       - name: Kustomize Edit
         env:
