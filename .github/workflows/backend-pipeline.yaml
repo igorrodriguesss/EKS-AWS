@@ -24,7 +24,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v5.0.0
       with:
       aws-region: ${{ secrets.AWS_REGION }}
-       role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
       
       steps:
       - name: Login to Amazon ECR
