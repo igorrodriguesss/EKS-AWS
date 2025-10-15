@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: igorrodriguesss/EKS-AWS-GITOPS
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
       
       -name: Kustomize Edit
       env:
