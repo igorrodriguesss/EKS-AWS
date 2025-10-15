@@ -42,7 +42,7 @@ jobs:
           docker build -f ./dvn-workshop-kubernetes/backend/YoutubeLiveApp/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./dvn-workshop-kubernetes/backend/YoutubeLiveApp
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       
-      - name: Checkout code
+      - name: Checkout GitOps repo
         uses: actions/checkout@v4
         with:
           repository: igorrodriguesss/EKS-AWS-GITOPS
