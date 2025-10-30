@@ -70,6 +70,23 @@ Este repositório provisiona um cluster EKS completo na AWS utilizando Terraform
       terraform init
       terraform apply
 --- 
+# 🔄 Integração com GitOps – EKS-AWS-GITOPS
+
+Este repositório faz parte do fluxo GitOps do projeto [EKS-AWS](https://github.com/igorrodriguesss/EKS-AWS) e é monitorado pelo ArgoCD para realizar o deploy contínuo das aplicações no cluster EKS.
+
+## 📁 Estrutura do Repositório
+
+- Armazena os **manifests Kubernetes** e **Helm charts** que o ArgoCD monitora
+- Toda alteração neste repositório é automaticamente sincronizada com o cluster via ArgoCD
+- Estrutura organizada por **ambientes** (ex: `dev`, `prod`) e por **aplicações**
+
+## 🧭 Fluxo GitOps
+
+1. O cluster EKS é provisionado via Terraform no repositório [EKS-AWS](https://github.com/igorrodriguesss/EKS-AWS)
+2. O ArgoCD é instalado e configurado no cluster
+3. O ArgoCD aponta para este repositório
+   
+---    
 
 ### 📌 Observações
 - O estado remoto precisa estar corretamente configurado antes de aplicar as demais etapas.
